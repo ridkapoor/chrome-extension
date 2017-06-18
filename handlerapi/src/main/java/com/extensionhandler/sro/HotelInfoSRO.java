@@ -9,6 +9,21 @@ public class HotelInfoSRO implements Serializable {
 
     private String hotelId;
     private double price;
+    private String url;
+
+    public HotelInfoSRO(String hotelId, double price, String url) {
+        this.hotelId = hotelId;
+        this.price = price;
+        this.url = url;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     public String getHotelId() {
         return hotelId;

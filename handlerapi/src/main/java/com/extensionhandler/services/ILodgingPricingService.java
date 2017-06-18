@@ -1,5 +1,6 @@
 package com.extensionhandler.services;
 
+import com.extensionhandler.response.GetHotelPricingResponse;
 import com.extensionhandler.sro.GetHotelPricingSRO;
 
 /**
@@ -7,5 +8,5 @@ import com.extensionhandler.sro.GetHotelPricingSRO;
  */
 public interface ILodgingPricingService {
 
-    void getPriceDetails(GetHotelPricingSRO hotelPricingSRO);
+    GetHotelPricingResponse getPriceDetails(GetHotelPricingSRO hotelPricingSRO);
 }

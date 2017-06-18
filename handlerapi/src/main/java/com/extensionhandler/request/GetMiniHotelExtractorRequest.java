@@ -14,7 +14,7 @@ public class GetMiniHotelExtractorRequest {
     private String checkOut;
     private String domain;
     private Set<HotelInfochildrenSRO> hotelInfo;
-    private RoomInfoSRO roominfo;
+    private RoomInfoSRO roomInfo;
     private String currency;
 
     public String getCurrency() {
@@ -57,11 +57,11 @@ public class GetMiniHotelExtractorRequest {
         this.hotelInfo = hotelInfo;
     }
 
-    public RoomInfoSRO getRoominfo() {
-        return roominfo;
+    public RoomInfoSRO getRoomInfo() {
+        return roomInfo;
     }
 
-    public void setRoominfo(RoomInfoSRO roominfo) {
-        this.roominfo = roominfo;
+    public void setRoomInfo(RoomInfoSRO roomInfo) {
+        this.roomInfo = roomInfo;
     }
 }

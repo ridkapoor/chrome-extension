@@ -8,4 +8,16 @@ import java.io.Serializable;
 public class RoomSRO implements Serializable{
 
     private int NumberOfAdults;
+
+    public int getNumberOfAdults() {
+        return NumberOfAdults;
+    }
+
+    public void setNumberOfAdults(int numberOfAdults) {
+        NumberOfAdults = numberOfAdults;
+    }
+
+    public RoomSRO(int numberOfAdults) {
+        NumberOfAdults = numberOfAdults;
+    }
 }

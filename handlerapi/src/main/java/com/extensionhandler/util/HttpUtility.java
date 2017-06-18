@@ -1,10 +1,17 @@
 package com.extensionhandler.util;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -20,12 +27,16 @@ public class HttpUtility {
 
         try {
 
-
             URL obj = new URL(getUrl(url, params));
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
             // optional default is GET
             con.setRequestMethod("GET");
+
+            for (Map.Entry<String, String> header : headers.entrySet()) {
+                con.setRequestProperty(header.getKey(), header.getValue());
+            }
+
 
             //add request header
 
@@ -53,6 +64,45 @@ public class HttpUtility {
         }
 
         return null;
+    }
+
+    public static String doPost(String url, String json) {
+
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(url);
+        StringEntity postingString = null;
+        String result = null;
+        try {
+            postingString = new StringEntity(json);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        post.setEntity(postingString);
+        post.setHeader("Content-type", "application/json");
+        try {
+            HttpResponse response = httpClient.execute(post);
+            if (response != null) {
+                InputStream in = response.getEntity().getContent(); //Get the data in the entity
+
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+                String inputLine;
+                StringBuffer buffer = new StringBuffer();
+
+                while ((inputLine = bufferedReader.readLine()) != null) {
+                    buffer.append(inputLine);
+                }
+                bufferedReader.close();
+
+
+                //print result
+                result = buffer.toString();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+
     }
 
     private static String getUrl(String url, Map<String, String> params) {
