@@ -8,13 +8,19 @@ import java.io.Serializable;
 public class HotelInfoSRO implements Serializable {
 
     private String hotelId;
-    private double price;
+    private String oldPrice;
+    private String price;
+    private String savings;
     private String url;
+    private String roomType;
 
-    public HotelInfoSRO(String hotelId, double price, String url) {
+    public HotelInfoSRO(String hotelId, String oldPrice, String price, String savings, String url, String roomType) {
         this.hotelId = hotelId;
+        this.oldPrice = oldPrice;
         this.price = price;
+        this.savings = savings;
         this.url = url;
+        this.roomType = roomType;
     }
 
     public String getUrl() {
@@ -33,12 +39,36 @@ public class HotelInfoSRO implements Serializable {
         this.hotelId = hotelId;
     }
 
-    public double getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(String price) {
         this.price = price;
+    }
+
+    public String getSavings() {
+        return savings;
+    }
+
+    public void setSavings(String savings) {
+        this.savings = savings;
+    }
+
+    public String getOldPrice() {
+        return oldPrice;
+    }
+
+    public void setOldPrice(String oldPrice) {
+        this.oldPrice = oldPrice;
+    }
+
+    public String getRoomType() {
+        return roomType;
+    }
+
+    public void setRoomType(String roomType) {
+        this.roomType = roomType;
     }
 
     @Override

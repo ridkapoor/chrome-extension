@@ -8,6 +8,8 @@ import com.extensionhandler.sro.GetHotelPricingSRO;
 import com.extensionhandler.sro.HotelInfoSRO;
 import com.extensionhandler.sro.HotelInfochildrenSRO;
 import com.extensionhandler.sro.RoomSRO;
+import com.extensionhandler.util.DateUtil;
+import com.extensionhandler.util.PriceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +37,18 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
     @Autowired
     private ILodgingPricingService lodgingPricingService;
 
+    @Autowired
+    private DateUtil dateUtil;
+
+
+    @Autowired
+    private PriceUtil priceUtil;
+
 
     @Override
     public GetMinHotelResponse miniHotelExtractor(GetMiniHotelExtractorRequest request) {
 
+        request = sanitizeData(request);
         Map<String, HotelInfochildrenSRO> partnerExpHotelIdMap = new HashMap<>();
         GetMinHotelResponse getMinHotelResponse = new GetMinHotelResponse();
         List<Integer> hotelIds = new ArrayList<>();
@@ -62,31 +72,51 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
 
             final HotelInfochildrenSRO hotelInfochildrenSRO = partnerExpHotelIdMap.get(expHId);
             double modPrice = 0;
+            GetHotelPricingResponse.ProductList lowestProductListing = null;
             for (GetHotelPricingResponse.ProductList productList : hotelData.getProductList()) {
 
-                if (request.getRoomInfo().getRoomType().trim().equalsIgnoreCase(productList.getDescription().trim())) {
+
+                if (lowestProductListing != null) {
+
+                    final GetHotelPricingResponse.PerDayAmounts lowestPerDayAmount =
+                            lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
+
                     final GetHotelPricingResponse.PerDayAmounts perDayAmounts =
                             productList.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
 
-                    modPrice = (perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue()
-                            + perDayAmounts.getDisplayCategories().getNonDisplayTaxAndFee().getTotalPrice().getValue())
-                            / (Math.pow(10, decimalPlace));
+                    if (lowestPerDayAmount.getDisplayCategories().getDisplayBase().getTotalPrice().getValue() >
+                            perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue()) {
+                        lowestProductListing = productList;
+                    }
 
-                    if (currencyExchangeInfo.getToCurrency().equalsIgnoreCase(request.getCurrency()))
-                        modPrice *= currencyExchangeInfo.getExchangeRate();
-                    else
-                        modPrice /= currencyExchangeInfo.getExchangeRate();
-
-                    break;
+                } else {
+                    lowestProductListing = productList;
                 }
+
             }
 
-            if ((hotelInfochildrenSRO.getPrice() > 0 && hotelInfochildrenSRO.getPrice() > modPrice)
-                    || (hotelInfochildrenSRO.getPrice() == -1)) {
+            final GetHotelPricingResponse.PerDayAmounts perDayAmounts =
+                    lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
 
-                hotels.put(partnerExpHotelIdMap.get(expHId).getHotelId(), new HotelInfoSRO(expHId, modPrice, urlCreator.getSignInDeepLinkURL(expHId)));
+            modPrice = (perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue())
+                    / (Math.pow(10, decimalPlace));
+
+            if (currencyExchangeInfo.getToCurrency().equalsIgnoreCase(request.getCurrency()))
+                modPrice *= currencyExchangeInfo.getExchangeRate();
+            else
+                modPrice /= currencyExchangeInfo.getExchangeRate();
+
+            final double oldPrice = hotelInfochildrenSRO.getPrice();
+            if ((oldPrice > 0 && oldPrice > modPrice)
+                    || (oldPrice == -1)) {
+
+                String oldPriceFormatted = oldPrice == -1 ? "" : priceUtil.formatPrice(oldPrice);
+                String savings = oldPrice == -1 ? "" : priceUtil.formatPrice(oldPrice - modPrice);
+
+                hotels.put(partnerExpHotelIdMap.get(expHId).getHotelId(), new HotelInfoSRO(expHId, oldPriceFormatted,
+                        priceUtil.formatPrice(modPrice), savings, urlCreator.getSignInDeepLinkURL(expHId),
+                        lowestProductListing.getDescription()));
             }
-
 
         }
 
@@ -128,6 +158,13 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
 
         return hotelPricingSRO;
 
+    }
+
+
+    private GetMiniHotelExtractorRequest sanitizeData(GetMiniHotelExtractorRequest request) {
+        request.setCheckIn(dateUtil.changeFormat(request.getCheckIn()));
+        request.setCheckOut(dateUtil.changeFormat(request.getCheckOut()));
+        return request;
     }
 
 }
