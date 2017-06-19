@@ -2,6 +2,7 @@ Sample api
 
 http://localhost:8080//service/getMinHotelData
 
+DD-mmm-yyyy
 
 Request:
 {

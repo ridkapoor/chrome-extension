@@ -9,7 +9,7 @@ public class RoomInfoSRO implements Serializable {
     private String roomType;
     private int noOfRooms;
     private int adults;
-    private int[] children;
+    private int children;
 
     public String getRoomType() {
         return roomType;
@@ -35,11 +35,11 @@ public class RoomInfoSRO implements Serializable {
         this.adults = adults;
     }
 
-    public int[] getChildren() {
+    public int getChildren() {
         return children;
     }
 
-    public void setChildren(int[] children) {
+    public void setChildren(int children) {
         this.children = children;
     }
 }

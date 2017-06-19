@@ -18,11 +18,7 @@ hotelData.price = "";
 getMinHotelData.hotelInfo = [hotelData];
 getMinHotelData.domain = "";
 
-
 //var dummyJson = "{\"checkIn\":\"2017-06-28\",\"checkOut\":\"2017-06-29\",\"roomInfo\":{\"roomType\":\"Standard Room\",\"noOfRooms\":1,\"adults\":1,\"children\":[]},\"currency\":\"USD\",\"hotelInfo\":[{\"hotelId\":\"25033\",\"price\":300}],\"domain\":\"htt:\/\/tripadvisor.com\"}";
-
-
-
 
 $(function() {
     chrome.runtime.onMessage.addListener(
@@ -30,17 +26,16 @@ $(function() {
             if (request.cmd == "fetchWidgetData") {
 
                 $.ajax({
-                    type: 'post',
+                    type: 'POST',
                     url: 'http://localhost:8080/service/getMinHotelData',
-                    data: request.data, //JSON.stringify(getMinHotelData),
+                    crossDomain: true,
+                    data: JSON.stringify(request.data),
                     contentType: "application/json; charset=utf-8",
-                    success: function(data) {
-                        if (data != null) {
-
-                        }
+                    success: function(responseData, textStatus, jqXHR) {
+                        sendResponse(responseData);
                     },
-                    error: function(data) {
-
+                    error: function (responseData, textStatus, errorThrown) {
+                        alert('POST failed.');
                     }
                 });
 

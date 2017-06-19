@@ -23,14 +23,14 @@ $(function() {
                 "roomType": "Standard Room",
                 "noOfRooms": 1,
                 "adults": 1,
-                "children": []
+                "children": 2
             },
             "currency": "USD",
             "hotelInfo": [{
                 "hotelId": "25033",
                 "price": 300
             }],
-            "domain": "htt://tripadvisor.com"
+            "domain": "http://tripadvisor.com"
         }
     }, function(response) {
         console.log(response);
