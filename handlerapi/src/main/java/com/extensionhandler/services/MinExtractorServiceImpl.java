@@ -10,9 +10,12 @@ import com.extensionhandler.sro.HotelInfochildrenSRO;
 import com.extensionhandler.sro.RoomSRO;
 import com.extensionhandler.util.DateUtil;
 import com.extensionhandler.util.PriceUtil;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -114,7 +117,9 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
                 String savings = oldPrice == -1 ? "" : priceUtil.formatPrice(oldPrice - modPrice);
 
                 hotels.put(partnerExpHotelIdMap.get(expHId).getHotelId(), new HotelInfoSRO(expHId, oldPriceFormatted,
-                        priceUtil.formatPrice(modPrice), savings, urlCreator.getSignInDeepLinkURL(expHId),
+                        priceUtil.formatPrice(modPrice), savings, getDeepLinkUrl(
+                        expHId, request.getCheckIn(), request.getCheckOut(), request.getRoomInfo().getAdults(),
+                        request.getRoomInfo().getChildren()),
                         lowestProductListing.getDescription()));
             }
 
@@ -165,6 +170,31 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
         request.setCheckIn(dateUtil.changeFormat(request.getCheckIn()));
         request.setCheckOut(dateUtil.changeFormat(request.getCheckOut()));
         return request;
+    }
+
+
+    private String getDeepLinkUrl(String hotelId, String checkIn, String checkOut, int noOfAdults, int noOfChildren) {
+
+        StringBuffer stringBuffer = new StringBuffer("https://www.expedia.com/user/signin?ckoflag=0&uurl=e3id%3Dredr%26rurl%3D%2F");
+        final String signInDeepLinkURL = urlCreator.getSignInDeepLinkURL(hotelId);
+        final String[] split = signInDeepLinkURL.split("/");
+        stringBuffer.append(split[3]);
+        stringBuffer.append("%3F%26rfrr%3DRedirect.From.www.expedia.com%252F");
+        stringBuffer.append(split[3]);
+        final URIBuilder uriBuilder = new URIBuilder();
+        uriBuilder.setParameter("chkin", dateUtil.changeFormatForURL(checkIn));
+        uriBuilder.setParameter("chkout", dateUtil.changeFormatForURL(checkOut));
+        uriBuilder.setParameter("adults", String.valueOf(noOfAdults));
+        uriBuilder.setParameter("children", String.valueOf(noOfChildren));
+        uriBuilder.setParameter("ts", String.valueOf(System.currentTimeMillis()));
+        try {
+            String encode = URLEncoder.encode(uriBuilder.toString().replaceAll("\\?", "#"), "UTF-8");
+            stringBuffer.append(encode);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return stringBuffer.toString();
+
     }
 
 }
