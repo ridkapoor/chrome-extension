@@ -32,9 +32,9 @@ $(function() {
                     success: function(responseData, textStatus, jqXHR) {
                         sendResponse(responseData);
                     },
-                    error: function(responseData, textStatus, errorThrown) {
-                        alert('POST failed.');
-                    }
+
+                    error: function (responseData, textStatus, errorThrown) {
+                        console.log("POST failed");                    }
                 });
 
             }

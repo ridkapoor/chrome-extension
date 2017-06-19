@@ -12,9 +12,11 @@ import java.text.DecimalFormat;
 public class PriceUtil {
 
     private final DecimalFormat decimalFormat = new DecimalFormat("####,###,###.##");
+    private final DecimalFormat trailingZeros = new DecimalFormat("#.00");
 
     public String formatPrice(double price) {
-        return decimalFormat.format(price);
+
+        return decimalFormat.format(Double.parseDouble(trailingZeros.format(price)));
     }
 
 }

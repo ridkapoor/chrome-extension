@@ -17,9 +17,13 @@
     ],
 
     "content_scripts": [{
-        "matches": ["https://www.tripadvisor.in/*"],
+        "matches": ["https://www.tripadvisor.in/Hotels*"],
         "js": ["jquery-2.2.3.min.js", "jquery-ui.js", "hsrScript.js"],
         "css": ["widget.css"]
+    },{
+       "matches": ["https://www.tripadvisor.in/Hotel_Review*"],
+        "js": ["jquery-2.2.3.min.js", "jquery-ui.js", "hlpScript.js"],
+        "css": ["widget.css"] 
     }],
     "background": {
         "scripts": ["jquery-2.2.3.min.js", "popup.js"],

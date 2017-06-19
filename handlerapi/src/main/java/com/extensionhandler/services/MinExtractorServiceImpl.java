@@ -16,7 +16,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by ridkapoor on 6/15/17.
@@ -73,23 +77,24 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
 
                     final String expHId = String.valueOf(hotelData.getHotelID());
                     final GetHotelPricingResponse.CurrencyExchangeInfo currencyExchangeInfo = hotelData.getCurrencyExchangeInfo();
-
                     final HotelInfochildrenSRO hotelInfochildrenSRO = partnerExpHotelIdMap.get(expHId);
                     double modPrice = 0;
                     GetHotelPricingResponse.ProductList lowestProductListing = null;
                     for (GetHotelPricingResponse.ProductList productList : hotelData.getProductList()) {
 
-
                         if (lowestProductListing != null) {
 
-                            final GetHotelPricingResponse.PerDayAmounts lowestPerDayAmount =
-                                    lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
+                            final GetHotelPricingResponse.TotalPrice lowestPerDayAmount =
+                                    lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0)
+                                            .getDisplayCategories().getDisplayBase().getTotalPrice();
 
-                            final GetHotelPricingResponse.PerDayAmounts perDayAmounts =
-                                    productList.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
+                            final GetHotelPricingResponse.TotalPrice perDayAmounts =
+                                    productList.getDisplayAmountsList().get(0).getPerDayAmounts().get(0).getDisplayCategories().getDisplayBase().getTotalPrice();
 
-                            if (lowestPerDayAmount.getDisplayCategories().getDisplayBase().getTotalPrice().getValue() >
-                                    perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue()) {
+
+                            if (getPriceValueBaseCurrency(lowestPerDayAmount.getValue(), request.getCurrency(), lowestPerDayAmount.getCurrency(), currencyExchangeInfo) >
+                                    getPriceValueBaseCurrency(lowestPerDayAmount.getValue(), request.getCurrency(), lowestPerDayAmount.getCurrency(), currencyExchangeInfo)) {
+
                                 lowestProductListing = productList;
                             }
 
@@ -103,14 +108,12 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
                             lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
 
 
-                    modPrice = ((perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue())
-                            * lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().size())
+                    modPrice = (perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue())
                             / (Math.pow(10, decimalPlace));
-                    if (currencyExchangeInfo.getToCurrency().equalsIgnoreCase(request.getCurrency())) {
-                        modPrice *= currencyExchangeInfo.getExchangeRate();
-                    } else {
-                        modPrice /= currencyExchangeInfo.getExchangeRate();
-                    }
+
+                    modPrice = getPriceValueBaseCurrency(modPrice, request.getCurrency(),
+                            perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getCurrency(),
+                            currencyExchangeInfo);
 
                     final double oldPrice = hotelInfochildrenSRO.getPrice();
                     if ((oldPrice > 0 && oldPrice > modPrice)
@@ -200,6 +203,21 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
         }
         return stringBuffer.toString();
 
+    }
+
+    private double getPriceValueBaseCurrency(double price, String baseCurrency, String priceCurrency,
+                                             GetHotelPricingResponse.CurrencyExchangeInfo currencyExchangeInfo) {
+        double baseCurrPrice = 0;
+        if (baseCurrency.equalsIgnoreCase(priceCurrency)) {
+            baseCurrPrice = price;
+        } else {
+            if (currencyExchangeInfo.getToCurrency().equalsIgnoreCase(priceCurrency)) {
+                baseCurrPrice = price * currencyExchangeInfo.getExchangeRate();
+            } else {
+                baseCurrPrice = price / currencyExchangeInfo.getExchangeRate();
+            }
+        }
+        return baseCurrPrice;
     }
 
 }
