@@ -144,6 +144,8 @@
     width: 100%;
     font: normal normal normal 1.5vh/normal "HelveticaNeue-Bold", Arial, "Lucida Grande", sans-serif;
     border-color: #d4a900 #aa8700 #aa8700;
+    text-decoration: none;
+    color: #333333;
 }
 
 .view-deal-btn-exp.active {
@@ -156,11 +158,21 @@
     background: -webkit-linear-gradient(bottom, #ffcb00 0%, #ffcb00 100%);
 }
 
+.view-deal-btn-exp a,
+a:visited,
+a:active,
+a:hover {
+    color: #333333 !important;
+    text-decoration: none !important;
+    outline: none !important;
+}
+
 .final-price-exp .circle-red.blink {
     display: none;
 }
 
-a.view-deal-link-exp,
+
+/*a.view-deal-link-exp,
 a.view-deal-link-exp:visited,
 a.view-deal-link-exp:active,
 a.view-deal-link-exp:hover,
@@ -169,3 +181,4 @@ a.view-deal-link-exp:hover,
     text-decoration: none;
     outline: none;
 }
+*/
