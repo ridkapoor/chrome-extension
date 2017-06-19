@@ -1,0 +1,155 @@
+.widget-container {
+    position: relative;
+    font-family: "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
+}
+
+#sticky-widget {
+    margin-right: 5vw;
+    border-radius: 5px;
+    display: inline-block;
+    box-sizing: border-box;
+    top: 42vh;
+    left: 89vw;
+    width: 10vw;
+    background: #f1f1f1;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.circle-red {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: #d80007;
+}
+
+.blink {
+    animation: blinker 0.2s cubic-bezier(.5, 0, 1, 1) infinite alternate;
+}
+
+@keyframes blinker {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.sticky {
+    position: fixed;
+    z-index: 1;
+}
+
+.header-exp {
+    height: inherit;
+    -webkit-user-select: none;
+    -webkit-font-smoothing: antialiased;
+    cursor: default;
+    background-color: #FFF;
+    //border-top: 0.5vh solid #FFCB00;
+}
+
+.hotel-name-exp {
+    // overflow: hidden;
+    // text-overflow: ellipsis;
+    // white-space: nowrap;
+    word-wrap: break-word;
+    text-align: center;
+    margin-bottom: 1vh;
+    font-size: 1.8vh;
+}
+
+.hotel-name-exp a {
+    color: #333333;
+}
+
+.member-ony-note {
+    text-align: center;
+    color: #666666;
+}
+
+.save-text-exp {
+    vertical-align: middle;
+    white-space: nowrap;
+    box-sizing: border-box;
+    color: #d80007;
+    font-weight: bold;
+    font-size: 2vh;
+    text-align: center;
+}
+
+.final-price-exp {
+    color: #333333;
+    font-weight: bold;
+    font-size: 2.5vh;
+    text-align: center;
+    margin: 1vh;
+}
+
+.xthrough-exp {
+    vertical-align: middle;
+    white-space: nowrap;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 2.3vh;
+    color: #d80007;
+    text-decoration: line-through;
+}
+
+#logo-exp {
+    cursor: pointer;
+}
+
+#logo-container-exp img {
+    height: 60%;
+    width: 60%;
+}
+
+.footer-exp {
+    padding: 1vh;
+    position: relative;
+    -webkit-user-select: none;
+    -webkit-font-smoothing: antialiased;
+    cursor: default;
+    background-color: #FFF;
+    //border-bottom: 0.5vh solid #FFCB00;
+}
+
+.main-exp {
+    border-top: 1px solid #C7C7C7;
+    border-bottom: 1px solid #C7C7C7;
+    background-color: #F5F5F5;
+    padding: 1vh;
+    position: relative;
+}
+
+#logo-container-exp {
+    width: 100%;
+    padding: 1vh;
+}
+
+.button-exp {
+    cursor: pointer;
+    border-radius: 3px;
+    border: solid 1px;
+    border-width: 1px 1px 2px;
+    background-clip: padding-box;
+    background: -webkit-linear-gradient(bottom, #ffbe00 0%, #ffcb00 100%);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    font: normal normal normal 1.5vh/normal "HelveticaNeue-Bold", Arial, "Lucida Grande", sans-serif;
+    border-color: #d4a900 #aa8700 #aa8700;
+}
+
+.button-exp.active {
+    box-shadow: 0 0 0 2px #00355f;
+    transition: cubic-bezier(0, 1, 0, 1.1) .3s;
+    border-color: transparent;
+}
+
+.button-exp:hover {
+    background: -webkit-linear-gradient(bottom, #ffcb00 0%, #ffcb00 100%);
+}
