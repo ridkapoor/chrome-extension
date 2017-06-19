@@ -85,4 +85,16 @@ public class HotelInfoSRO implements Serializable {
     public int hashCode() {
         return hotelId.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "HotelInfoSRO{" +
+                "hotelId='" + hotelId + '\'' +
+                ", oldPrice='" + oldPrice + '\'' +
+                ", price='" + price + '\'' +
+                ", savings='" + savings + '\'' +
+                ", url='" + url + '\'' +
+                ", roomType='" + roomType + '\'' +
+                '}';
+    }
 }

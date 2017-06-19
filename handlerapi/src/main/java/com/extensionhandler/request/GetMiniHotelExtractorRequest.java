@@ -73,4 +73,16 @@ public class GetMiniHotelExtractorRequest {
     public void setRoomInfo(RoomInfoSRO roomInfo) {
         this.roomInfo = roomInfo;
     }
+
+    @Override
+    public String toString() {
+        return "GetMiniHotelExtractorRequest{" +
+                "checkIn='" + checkIn + '\'' +
+                ", checkOut='" + checkOut + '\'' +
+                ", domain='" + domain + '\'' +
+                ", hotelInfo=" + hotelInfo +
+                ", roomInfo=" + roomInfo +
+                ", currency='" + currency + '\'' +
+                '}';
+    }
 }

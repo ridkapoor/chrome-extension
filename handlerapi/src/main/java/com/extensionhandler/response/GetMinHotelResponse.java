@@ -19,4 +19,11 @@ public class GetMinHotelResponse implements Serializable {
     public void setHotels(Map<String, HotelInfoSRO> hotels) {
         this.hotels = hotels;
     }
+
+    @Override
+    public String toString() {
+        return "GetMinHotelResponse{" +
+                "hotels=" + hotels +
+                '}';
+    }
 }

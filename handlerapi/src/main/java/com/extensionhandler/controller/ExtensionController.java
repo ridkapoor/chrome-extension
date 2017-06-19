@@ -4,12 +4,7 @@ import com.extensionhandler.request.GetMiniHotelExtractorRequest;
 import com.extensionhandler.response.GetMinHotelResponse;
 import com.extensionhandler.services.IMinExtractorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * Created by ridkapoor on 6/6/17.
@@ -26,7 +21,11 @@ public class ExtensionController {
     @ResponseBody
     public GetMinHotelResponse miniHotelExtractor(@RequestBody GetMiniHotelExtractorRequest request) {
 
-        return iMinExtractorService.miniHotelExtractor(request);
+        final GetMinHotelResponse getMinHotelResponse = iMinExtractorService.miniHotelExtractor(request);
+        if (getMinHotelResponse != null) {
+            System.out.print(getMinHotelResponse.toString());
+        }
+        return getMinHotelResponse;
 
     }
 

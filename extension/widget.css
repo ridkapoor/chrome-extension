@@ -130,7 +130,7 @@
     padding: 1vh;
 }
 
-.button-exp {
+.view-deal-btn-exp {
     cursor: pointer;
     border-radius: 3px;
     border: solid 1px;
@@ -146,12 +146,16 @@
     border-color: #d4a900 #aa8700 #aa8700;
 }
 
-.button-exp.active {
+.view-deal-btn-exp.active {
     box-shadow: 0 0 0 2px #00355f;
     transition: cubic-bezier(0, 1, 0, 1.1) .3s;
     border-color: transparent;
 }
 
-.button-exp:hover {
+.view-deal-btn-exp:hover {
     background: -webkit-linear-gradient(bottom, #ffcb00 0%, #ffcb00 100%);
+}
+
+.view-deal-link-exp {
+    text-decoration: none;
 }
