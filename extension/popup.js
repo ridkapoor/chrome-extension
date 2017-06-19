@@ -18,8 +18,6 @@ hotelData.price = "";
 getMinHotelData.hotelInfo = [hotelData];
 getMinHotelData.domain = "";
 
-//var dummyJson = "{\"checkIn\":\"2017-06-28\",\"checkOut\":\"2017-06-29\",\"roomInfo\":{\"roomType\":\"Standard Room\",\"noOfRooms\":1,\"adults\":1,\"children\":[]},\"currency\":\"USD\",\"hotelInfo\":[{\"hotelId\":\"25033\",\"price\":300}],\"domain\":\"htt:\/\/tripadvisor.com\"}";
-
 $(function() {
     chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {

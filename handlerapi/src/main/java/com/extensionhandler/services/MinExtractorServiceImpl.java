@@ -101,7 +101,8 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
             final GetHotelPricingResponse.PerDayAmounts perDayAmounts =
                     lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
 
-            modPrice = (perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue())
+            modPrice = ((perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue())
+                    * lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().size())
                     / (Math.pow(10, decimalPlace));
 
             if (currencyExchangeInfo.getToCurrency().equalsIgnoreCase(request.getCurrency()))
