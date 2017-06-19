@@ -21,6 +21,8 @@ public class ExtensionController {
     @ResponseBody
     public GetMinHotelResponse miniHotelExtractor(@RequestBody GetMiniHotelExtractorRequest request) {
 
+        System.out.println(request.toString());
+
         final GetMinHotelResponse getMinHotelResponse = iMinExtractorService.miniHotelExtractor(request);
         if (getMinHotelResponse != null) {
             System.out.print(getMinHotelResponse.toString());

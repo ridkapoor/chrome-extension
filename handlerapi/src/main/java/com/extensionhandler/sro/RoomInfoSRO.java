@@ -33,4 +33,13 @@ public class RoomInfoSRO implements Serializable {
     public void setChildren(int children) {
         this.children = children;
     }
+
+    @Override
+    public String toString() {
+        return "RoomInfoSRO{" +
+                "noOfRooms=" + noOfRooms +
+                ", adults=" + adults +
+                ", children=" + children +
+                '}';
+    }
 }

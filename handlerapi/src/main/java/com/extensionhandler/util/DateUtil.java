@@ -31,7 +31,10 @@ public class DateUtil {
             formattedDate = toDateFormat.format(parse);
 
         } catch (ParseException e) {
-            e.printStackTrace();
+            System.err.print(date + format + e.getLocalizedMessage());
+
+        } catch (Exception e) {
+            System.err.print(date + format + e.getLocalizedMessage());
         }
 
         return formattedDate;
