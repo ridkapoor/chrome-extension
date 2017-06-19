@@ -14,6 +14,28 @@ var listingsSelector = $(".hotel_content"),
 
 $(function() {
 
+    chrome.runtime.sendMessage({
+        "cmd": "fetchWidgetData",
+        "data": {
+            "checkIn": "2017-06-28",
+            "checkOut": "2017-06-29",
+            "roomInfo": {
+                "roomType": "Standard Room",
+                "noOfRooms": 1,
+                "adults": 1,
+                "children": []
+            },
+            "currency": "USD",
+            "hotelInfo": [{
+                "hotelId": "25033",
+                "price": 300
+            }],
+            "domain": "htt://tripadvisor.com"
+        }
+    }, function(response) {
+        console.log(response);
+    });
+
     $.ajax({
         url: chrome.extension.getURL("templates/widget.html"),
         dataType: "html",
