@@ -168,8 +168,8 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
 
 
     private GetMiniHotelExtractorRequest sanitizeData(GetMiniHotelExtractorRequest request) {
-        request.setCheckIn(dateUtil.changeFormat(request.getCheckIn()));
-        request.setCheckOut(dateUtil.changeFormat(request.getCheckOut()));
+        request.setCheckIn(dateUtil.changeFormat(request.getCheckIn(), request.getDateFormat()));
+        request.setCheckOut(dateUtil.changeFormat(request.getCheckOut(), request.getDateFormat()));
         return request;
     }
 

@@ -18,12 +18,16 @@ public class DateUtil {
     private final DateFormat toDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final DateFormat dateFormatUrl = new SimpleDateFormat("dd/MM/yyyy");
 
-    public String changeFormat(String date) {
+    public String changeFormat(String date, String format) {
         String formattedDate = null;
-
-        date = date + " 2017";
+        Date parse = null;
         try {
-            Date parse = dateFormat.parse(date);
+            if (format.equalsIgnoreCase("dd MMM")) {
+                date = date + " 2017";
+                parse = dateFormat.parse(date);
+            } else if (format.equalsIgnoreCase("dd/MMM/yyyy")) {
+                parse = dateFormatUrl.parse(date);
+            }
             formattedDate = toDateFormat.format(parse);
 
         } catch (ParseException e) {

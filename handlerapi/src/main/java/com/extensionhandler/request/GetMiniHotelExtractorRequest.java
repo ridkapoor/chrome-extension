@@ -16,6 +16,15 @@ public class GetMiniHotelExtractorRequest {
     private Set<HotelInfochildrenSRO> hotelInfo;
     private RoomInfoSRO roomInfo;
     private String currency;
+    private String dateFormat;
+
+    public String getDateFormat() {
+        return dateFormat;
+    }
+
+    public void setDateFormat(String dateFormat) {
+        this.dateFormat = dateFormat;
+    }
 
     public String getCurrency() {
         return currency;
