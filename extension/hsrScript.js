@@ -10,32 +10,12 @@ var listingsSelector = $(".hotel_content"),
         return this;
     }),
     expediaHotelIds = [],
-    hotelsData = {};
+    hotelsData = {},
+    pageSize = 4,
+    hotelsInfoList = [];
+
 
 $(function() {
-
-    chrome.runtime.sendMessage({
-        "cmd": "fetchWidgetData",
-        "data": {
-            "checkIn": "2017-06-28",
-            "checkOut": "2017-06-29",
-            "roomInfo": {
-                "roomType": "Standard Room",
-                "noOfRooms": 1,
-                "adults": 1,
-                "children": 2
-            },
-            "currency": "USD",
-            "hotelInfo": [{
-                "hotelId": "25033",
-                "price": 300
-            }],
-            "domain": "http://tripadvisor.com"
-        }
-    }, function(response) {
-        console.log(response);
-    });
-
     $.ajax({
         url: chrome.extension.getURL("templates/widget.html"),
         dataType: "html",
@@ -45,12 +25,19 @@ $(function() {
         }
     });
 
+    hotelsInfoList = getHotelData();
+    var start = 0;
+    var hotels = {};
+    for (i = 0; i < Math.ceil(listings.length / pageSize); i++) {
 
-    getHotelData();
+        chrome.runtime.sendMessage({ "cmd": "fetchWidgetData", "data": getWidgetRequestDTO(start + i * pageSize) }, function(response) {
+            console.log(response);
+        });
 
-    getWidgetRequestDTO();
+    }
 
 });
+
 //$('.loadingWhiteBox').on('remove', showWidget);
 
 
@@ -65,13 +52,12 @@ function onWindowScroll() {
             if (cur) {
                 hotelId = document.getElementsByClassName('listing easyClear')[index].getAttribute('data-locationid');
                 price = hotelsData[hotelId].price;
-
                 return false;
             }
         }
     });
 
-    if (cur && $.inArray(hotelId, expediaHotelIds) > -1) {
+    if (cur && expediaHotelIds[hotelId]) {
         //price = $(cur).find('.sidebyside.addprice.sidebysideaddprice div.price').text();
 
         $(".xthrough-exp").html(price);
@@ -150,17 +136,27 @@ function isElementInViewport(el) {
 // }
 
 
-function getWidgetRequestDTO() {
+function getWidgetRequestDTO(start) {
 
-    var checkinDate = $('*[data-datetype="CHECKIN"]').find('.picker-inner .span.picker-label.target').innerText;
-    var checkoutDate = $('*[data-datetype="CHECKOUT"]').find('.picker-inner .span.picker-label.target').innerText;
-    var roomInfo = $('.room-info').text();
-    var childInfo = $('.child-info').text();
-    var adultInfo = $('.adult-info').text();
-    var currency = $('*[data-prwidget-name="homepage_footer_pickers"]').find('.unified-picker .picker-inner span').innerText;
+    var checkinDate = $('*[data-datetype="CHECKIN"]').find('.picker-inner span.picker-label.target')[0].innerText.trim();
+    var checkoutDate = $('*[data-datetype="CHECKOUT"]').find('.picker-inner span.picker-label.target')[0].innerText.trim();
+    var rooms = parseInt($('.room-info').text().replace(/room/i, '').trim());
+    var children = parseInt($('.child-info').text().replace(/child/i, '').trim());
+    var adults = parseInt($('.adult-info').text().replace(/adult/i, '').trim());
+    var currency = $('*[data-prwidget-name="homepage_footer_pickers"]').find('.unified-picker .picker-inner span')[0].innerText;
+    currency = currency.substring(1, currency.length);
 
-
-
+    return {
+        "checkIn": checkinDate,
+        "checkOut": checkoutDate,
+        "roomInfo": {
+            "noOfRooms": rooms,
+            "adults": adults,
+            "children": children
+        },
+        "currency": currency,
+        "hotelInfo": hotelsInfoList.slice(start, start + pageSize)
+    };
 }
 
 
@@ -175,7 +171,8 @@ function getHotelData() {
         hotelId = null,
         otaName = null,
         hotelName = null,
-        price = null;
+        price = null,
+        hotelInfoList = [];
 
     for (var i = 0; i < itinLength; i++) {
         listing = document.getElementsByClassName('listing easyClear')[i];
@@ -192,10 +189,13 @@ function getHotelData() {
             if (pattern.test(otaName)) {
                 hotelId = listing.getAttribute('data-locationid');
                 price = ota.getAttribute('data-pernight');
-                hotelName = listing.getElementsByClassName('photo_image')[0].getAttribute('alt');
-                hotelsData[hotelId] = { 'price': parseFloat(price), 'hotelName': hotelName };
-                expediaHotelIds.push(hotelId);
+                //hotelName = listing.getElementsByClassName('photo_image')[0].getAttribute('alt');
+                hotelsData[hotelId] = {
+                    'price': parseFloat(price)
+                };
+                hotelInfoList.push({ "hotelId": hotelId, "price": parseFloat(price) || -1 });
             }
         }
     }
+    return hotelInfoList;
 }
