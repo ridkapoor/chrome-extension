@@ -5,14 +5,15 @@
 // });
 
 
-var listingsSelector = $(".hotel_content"),
+var listingsSelector = $(".listing.easyClear"),
     listings = listingsSelector.map(function() {
         return this;
     }),
     expediaHotelIds = [],
     hotelsData = {},
     pageSize = 4,
-    hotelsInfoList = [];
+    hotelsInfoList = [],
+    widgetHotelData = {};
 
 
 $(function() {
@@ -27,13 +28,24 @@ $(function() {
 
     hotelsInfoList = getHotelData();
     var start = 0;
-    var hotels = {};
     for (i = 0; i < Math.ceil(listings.length / pageSize); i++) {
 
         chrome.runtime.sendMessage({ "cmd": "fetchWidgetData", "data": getWidgetRequestDTO(start + i * pageSize) }, function(response) {
-            console.log(response);
-        });
+            if (response && response.hotels) {
+                $.each(response.hotels, function(key, value) {
+                    widgetHotelData[key] = value;
+                });
 
+            }
+
+
+            // private String oldPrice;
+            // private String price;
+            // private String savings;
+            // private String url;
+            // private String roomType;
+
+        });
     }
 
 });
@@ -44,24 +56,22 @@ $(function() {
 function onWindowScroll() {
     var cur = null,
         hotelId = null,
-        price = null;
-    var listingsSelector = $(".hotel_content");
+        price = null,
+        hotelData = null;
     $.each(listingsSelector, function(index, value) {
-        if (isElementInViewport(value)) {
+        hotelId = $(value)[0].attributes['data-locationid'].value;
+        if (widgetHotelData[hotelId] && isElementInViewport(value)) {
             cur = value;
-            if (cur) {
-                hotelId = document.getElementsByClassName('listing easyClear')[index].getAttribute('data-locationid');
-                price = hotelsData[hotelId].price;
-                return false;
-            }
+            hotelData = widgetHotelData[hotelId];
+            return false;
         }
     });
 
-    if (cur && expediaHotelIds[hotelId]) {
+    if (cur) {
         //price = $(cur).find('.sidebyside.addprice.sidebysideaddprice div.price').text();
 
-        $(".xthrough-exp").html(price);
-        $(".hotel-name-exp a").text($(cur).find('.listing_title a.property_title').text());
+        $(".xthrough-exp").html(hotelData.price);
+        $(".hotel-name-exp a").text($(cur).find('.hotel-content .listing_title a.property_title').text());
     }
 }
 

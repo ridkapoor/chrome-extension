@@ -16,11 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by ridkapoor on 6/15/17.
@@ -61,72 +57,78 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
         for (HotelInfochildrenSRO hotelInfo : hotelInfochildrenSROS) {
             final String expHotelId = appConfig.getProperty(hotelInfo.getHotelId().trim());
             partnerExpHotelIdMap.put(expHotelId, hotelInfo);
-            if (expHotelId != null && !expHotelId.isEmpty())
+            if (expHotelId != null && !expHotelId.isEmpty()) {
                 hotelIds.add(Integer.parseInt(expHotelId));
+            }
         }
-        // get pricing from lpas
-        final GetHotelPricingResponse priceDetails = lodgingPricingService.getPriceDetails(getLpasRequest(hotelIds, request));
-        int decimalPlace = priceDetails.getMonetaryDecimalPlace().getDecimalPlace();
 
-        for (GetHotelPricingResponse.HotelList hotelData : priceDetails.getHotelList()) {
-
-            final String expHId = String.valueOf(hotelData.getHotelID());
-            final GetHotelPricingResponse.CurrencyExchangeInfo currencyExchangeInfo = hotelData.getCurrencyExchangeInfo();
-
-            final HotelInfochildrenSRO hotelInfochildrenSRO = partnerExpHotelIdMap.get(expHId);
-            double modPrice = 0;
-            GetHotelPricingResponse.ProductList lowestProductListing = null;
-            for (GetHotelPricingResponse.ProductList productList : hotelData.getProductList()) {
+        if (!hotelIds.isEmpty()) {
+            // get pricing from lpas
+            final GetHotelPricingResponse priceDetails = lodgingPricingService.getPriceDetails(getLpasRequest(hotelIds, request));
+            int decimalPlace = priceDetails.getMonetaryDecimalPlace().getDecimalPlace();
 
 
-                if (lowestProductListing != null) {
+            for (GetHotelPricingResponse.HotelList hotelData : priceDetails.getHotelList()) {
 
-                    final GetHotelPricingResponse.PerDayAmounts lowestPerDayAmount =
-                            lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
+                final String expHId = String.valueOf(hotelData.getHotelID());
+                final GetHotelPricingResponse.CurrencyExchangeInfo currencyExchangeInfo = hotelData.getCurrencyExchangeInfo();
 
-                    final GetHotelPricingResponse.PerDayAmounts perDayAmounts =
-                            productList.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
+                final HotelInfochildrenSRO hotelInfochildrenSRO = partnerExpHotelIdMap.get(expHId);
+                double modPrice = 0;
+                GetHotelPricingResponse.ProductList lowestProductListing = null;
+                for (GetHotelPricingResponse.ProductList productList : hotelData.getProductList()) {
 
-                    if (lowestPerDayAmount.getDisplayCategories().getDisplayBase().getTotalPrice().getValue() >
-                            perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue()) {
+
+                    if (lowestProductListing != null) {
+
+                        final GetHotelPricingResponse.PerDayAmounts lowestPerDayAmount =
+                                lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
+
+                        final GetHotelPricingResponse.PerDayAmounts perDayAmounts =
+                                productList.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
+
+                        if (lowestPerDayAmount.getDisplayCategories().getDisplayBase().getTotalPrice().getValue() >
+                                perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue()) {
+                            lowestProductListing = productList;
+                        }
+
+                    } else {
                         lowestProductListing = productList;
                     }
 
+                }
+
+                final GetHotelPricingResponse.PerDayAmounts perDayAmounts =
+                        lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
+
+
+                modPrice = ((perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue())
+                        * lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().size())
+                        / (Math.pow(10, decimalPlace));
+                if (currencyExchangeInfo.getToCurrency().equalsIgnoreCase(request.getCurrency())) {
+                    modPrice *= currencyExchangeInfo.getExchangeRate();
                 } else {
-                    lowestProductListing = productList;
+                    modPrice /= currencyExchangeInfo.getExchangeRate();
+                }
+
+                final double oldPrice = hotelInfochildrenSRO.getPrice();
+                if ((oldPrice > 0 && oldPrice > modPrice)
+                        || (oldPrice == -1)) {
+
+                    String oldPriceFormatted = oldPrice == -1 ? "" : priceUtil.formatPrice(oldPrice);
+                    String savings = oldPrice == -1 ? "" : priceUtil.formatPrice(oldPrice - modPrice);
+
+                    hotels.put(partnerExpHotelIdMap.get(expHId).getHotelId(), new HotelInfoSRO(expHId, oldPriceFormatted,
+                            priceUtil.formatPrice(modPrice), savings, getDeepLinkUrl(
+                            expHId, request.getCheckIn(), request.getCheckOut(), request.getRoomInfo().getAdults(),
+                            request.getRoomInfo().getChildren()),
+                            lowestProductListing.getDescription()));
                 }
 
             }
 
-            final GetHotelPricingResponse.PerDayAmounts perDayAmounts =
-                    lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().get(0);
-
-            modPrice = ((perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getValue())
-                    * lowestProductListing.getDisplayAmountsList().get(0).getPerDayAmounts().size())
-                    / (Math.pow(10, decimalPlace));
-
-            if (currencyExchangeInfo.getToCurrency().equalsIgnoreCase(request.getCurrency()))
-                modPrice *= currencyExchangeInfo.getExchangeRate();
-            else
-                modPrice /= currencyExchangeInfo.getExchangeRate();
-
-            final double oldPrice = hotelInfochildrenSRO.getPrice();
-            if ((oldPrice > 0 && oldPrice > modPrice)
-                    || (oldPrice == -1)) {
-
-                String oldPriceFormatted = oldPrice == -1 ? "" : priceUtil.formatPrice(oldPrice);
-                String savings = oldPrice == -1 ? "" : priceUtil.formatPrice(oldPrice - modPrice);
-
-                hotels.put(partnerExpHotelIdMap.get(expHId).getHotelId(), new HotelInfoSRO(expHId, oldPriceFormatted,
-                        priceUtil.formatPrice(modPrice), savings, getDeepLinkUrl(
-                        expHId, request.getCheckIn(), request.getCheckOut(), request.getRoomInfo().getAdults(),
-                        request.getRoomInfo().getChildren()),
-                        lowestProductListing.getDescription()));
-            }
-
+            getMinHotelResponse.setHotels(hotels);
         }
-
-        getMinHotelResponse.setHotels(hotels);
         return getMinHotelResponse;
     }
 
