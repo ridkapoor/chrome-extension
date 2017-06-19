@@ -1,67 +1,93 @@
-// chrome.browserAction.onClicked.addListener(function(tab) {
-//     chrome.tabs.executeScript({
-//         code: 'document.body.style.backgroundColor="red"'
-//     });
-// });
-
-
-var listingsSelector = $(".hotel_content"),
+var listingsSelector = $(".ppr_priv_hr_atf_north_star_nostalgic"),
     listings = listingsSelector.map(function() {
         return this;
     }),
-    expediaHotelIds = [],
-    hotelsData = {},
-    pageSize = 4,
-    hotelsInfoList = [];
+    pageSize = 5,
+    hotelsInfoList = [],
+    widgetHotelData = {},
+    userRequestDTO = {};
+
 
 
 $(function() {
-    $.ajax({
+    hotelsInfoList = getHotelData();
+    userRequestDTO = getUserRequestDTO();
+    $.when(loadWidget()).done(fetchExpediaHotelsData);
+
+});
+
+function loadWidget() {
+    return $.ajax({
         url: chrome.extension.getURL("templates/widget.html"),
         dataType: "html",
         success: function(html) {
             $($.parseHTML(html)).appendTo('.atf_meta_and_photos');
             $('#logo-exp').attr("src", chrome.extension.getURL('images/expedia.svg'));
+            $('#sticky-widget').hide();
         }
     });
+}
 
-    hotelsInfoList = getHotelData();
+function fetchExpediaHotelsData() {
+
     var start = 0;
-    var hotels = {};
-    for (i = 0; i < Math.ceil(listings.length / pageSize); i++) {
+    var loadData = true;
+    var req = {};
 
-        chrome.runtime.sendMessage({ "cmd": "fetchWidgetData", "data": getWidgetRequestDTO(start + i * pageSize) }, function(response) {
-            console.log(response);
+    for (i = 0; i < Math.ceil(hotelsInfoList.length / pageSize); i++) {
+
+        req = getWidgetRequestDTO(start + i * pageSize);
+
+        chrome.runtime.sendMessage({ "cmd": "fetchWidgetData", "data": req }, function(response) {
+            if (response && response.hotels) {
+                $.each(response.hotels, function(key, value) {
+                    widgetHotelData[key] = value;
+                });
+
+                if (loadData && widgetHotelData[req.hotelId]) {
+                    populateWidgetData();
+                    loadData = false;
+                }
+            }
+
         });
-
     }
 
-});
+}
 
-//$('.loadingWhiteBox').on('remove', showWidget);
-
-
-function onWindowScroll() {
+function populateWidgetData() {
     var cur = null,
         hotelId = null,
-        price = null;
+        price = null,
+        hotelData = null;
+
     var listingsSelector = $(".ppr_priv_hr_atf_north_star_nostalgic");
     $.each(listingsSelector, function(index, value) {
-        if (isElementInViewport(value)) {
+        hotelId = document.getElementsByClassName('blRow')[index].getAttribute('data-locid');
+        if (widgetHotelData[hotelId] && isElementInViewport(value)) {
             cur = value;
-            if (cur) {
-                hotelId = document.getElementsByClassName('blRow')[index].getAttribute('data-locid');
-                price = hotelsData[hotelId].price;
-                return false;
-            }
+            hotelData = widgetHotelData[hotelId];
+            return false;
         }
     });
 
-    if (cur && expediaHotelIds[hotelId]) {
-        //price = $(cur).find('.sidebyside.addprice.sidebysideaddprice div.price').text();
+    if (cur) {
+        $(".xthrough-exp span.price").html(hotelData.oldPrice);
+        $('.save-text-exp span.saving').html(hotelData.savings);
+        $(".final-price-exp span.price").html(hotelData.price);
+        $(".hotel-name-exp").text($(cur).find('h1.heading_title').text());
+        $('a.view-deal-link-exp').attr('href', hotelData.url);
+        if (hotelData.oldPrice && hotelData.savings) {
+            $('.xthrough-exp').show();
+            $('.save-text-exp').show();
+            $('.final-price-exp .circle-red.blink').hide();
+        } else {
+            $('.xthrough-exp').hide();
+            $('.save-text-exp').hide();
+            $('.final-price-exp .circle-red.blink').show();
+        }
 
-        $(".xthrough-exp").html(price);
-        $(".hotel-name-exp a").text($(cur).find('h1.heading_title').text());
+        $('#sticky-widget').show();
     }
 }
 
@@ -79,7 +105,7 @@ function debounce(func, time) {
     }
 }
 
-$(window).on('scroll', debounce(onWindowScroll, 50));
+$(window).on('scroll', debounce(populateWidgetData, 50));
 
 function isElementInViewport(el) {
 
@@ -100,50 +126,14 @@ function isElementInViewport(el) {
 
 }
 
-// var hotelIds = []
-// gethotelids = hotelid();
-
-// function gethotelids() {
-//     itinLength = document.getElementsByClassName('listing easyClear').length;
-//     for (var i = 0; i < itinLength; i++) {
-//         otaLength = document.getElementsByClassName('listing easyClear')[i].getElementsByClassName('no_cpu').length;
-//         console.log(otaLength);
-//         for (var j = 0; j < otaLength; j++) {
-//             if (document.getElementsByClassName('listing easyClear')[i].getElementsByClassName('no_cpu')[j].getElementsByClassName('provider').length > 0) {
-//                 otaName = document.getElementsByClassName('listing easyClear')[i].getElementsByClassName('no_cpu')[j].getElementsByClassName('provider')[0].textContent;
-//                 if (otaName.test(/Exp/g)) {
-//                     city = document.getElementsByClassName('listing easyClear')[i].getAttribute('data-locationid');
-//                     price = document.getElementsByClassName('listing easyClear')[i].getElementsByClassName('no_cpu')[j].getAttribute('data-pernight');
-//                     hotelname = document.getElementsByClassName('listing easyClear')[i].getElementsByClassName('photo_image')[0].getAttribute('alt');
-//                     hotelIds.push({ city: parseInt(city), price: parseInt(price), hotelname: hotelname });
-//                     console.log(hotelIds[i]);
-//                 }
-//             }
-//             if (document.getElementsByClassName('listing easyClear')[i].getElementsByClassName('no_cpu')[j].getElementsByClassName('vendor').length > 0) {
-//                 otaName = document.getElementsByClassName('listing easyClear')[i].getElementsByClassName('no_cpu')[j].getElementsByClassName('vendor')[0].textContent;
-//                 if (otaName.test(/Exp/g)) {
-//                     console.log(otaName);
-//                     city = document.getElementsByClassName('listing easyClear')[i].getAttribute('data-locationid');
-//                     price = document.getElementsByClassName('listing easyClear')[i].getElementsByClassName('no_cpu')[j].getAttribute('data-pernight');
-//                     hotelname = document.getElementsByClassName('listing easyClear')[i].getElementsByClassName('photo_image')[0].getAttribute('alt');
-//                     hotelIds.push({ city: parseInt(city), price: parseInt(price), hotelname: hotelname });
-//                     console.log(hotelIds[i]);
-//                 }
-//             }
-//         }
-//     }
-//     return hotelIds;
-// }
-
-
-function getWidgetRequestDTO(start) {
+function getUserRequestDTO() {
 
     var checkinDate = $('*[data-datetype="CHECKIN"]').find('.picker-inner span.picker-label')[0].innerText.trim();
     var checkoutDate = $('*[data-datetype="CHECKOUT"]').find('.picker-inner span.picker-label')[0].innerText.trim();
     var dateFormat = 'dd/MM/yyyy';
-    var rooms = parseInt($('.rooms span.picker-label')[0].text().replace(/room/i, '').trim());
-    var children = parseInt($('.children span.picker-label')[0].text().replace(/child/i, '').trim());
-    var adults = parseInt($('.adults span.picker-label')[0].text().replace(/adult/i, '').trim());
+    var rooms = parseInt($('.rooms span.picker-label')[0].innerText.replace(/room/i, '').trim());
+    var children = parseInt($('.children span.picker-label')[0].innerText.replace(/child/i, '').trim());
+    var adults = parseInt($('.adults span.picker-label')[0].innerText.replace(/adult/i, '').trim());
     var currency = $('*[data-prwidget-name="homepage_footer_pickers"]').find('.unified-picker .picker-inner span')[0].innerText;
     currency = currency.substring(1, currency.length);
 
@@ -157,8 +147,16 @@ function getWidgetRequestDTO(start) {
             "children": children
         },
         "currency": currency,
-        "hotelInfo": hotelsInfoList.slice(start, start + pageSize)
+        "dateFormat": dateFormat
     };
+}
+
+function getWidgetRequestDTO(start) {
+
+    var hotelReqData = userRequestDTO;
+    hotelReqData.hotelInfo = hotelsInfoList.slice(start, start + pageSize);
+
+    return hotelReqData;
 }
 
 
@@ -166,27 +164,23 @@ function getWidgetRequestDTO(start) {
 
 function getHotelData() {
     pattern = /Expedia/i,
-    listing = null,
-    otaLength = null,
-    ota = null,
-    hotelId = null,
-    otaName = null,
-    hotelName = null,
-    price = null,
-    hotelInfoList = [];
+        listing = null,
+        otaLength = null,
+        ota = null,
+        hotelId = null,
+        otaName = null,
+        hotelName = null,
+        price = null,
+        hotelInfoList = [];
 
-    otaLength = document.getElementsByClassName('no_cpu offer').length;
+    otaLength = document.getElementsByClassName('prw_common_base_dropdown ui_options')[0].getElementsByClassName('no_cpu').length;
     for (var j = 0; j < otaLength; j++) {
-        ota = document.getElementsByClassName('no_cpu offer')[j];
+        ota = document.getElementsByClassName('prw_common_base_dropdown ui_options')[0].getElementsByClassName('no_cpu')[j];
         otaName = ota.getAttribute('data-provider');
-        
+
         if (pattern.test(otaName)) {
             hotelId = ota.getAttribute('data-locationid');
             price = ota.getAttribute('data-pernight');
-            //hotelName = listing.getElementsByClassName('photo_image')[0].getAttribute('alt');
-            hotelsData[hotelId] = {
-                'price': parseFloat(price)
-            };
             hotelInfoList.push({ "hotelId": hotelId, "price": parseFloat(price) || -1 });
         }
     }

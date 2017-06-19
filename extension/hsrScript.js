@@ -31,17 +31,20 @@ function fetchExpediaHotelsData() {
 
     var start = 0;
     var loadData = true;
+    var req = {};
 
-    for (i = 0; i < Math.ceil(listings.length / pageSize); i++) {
+    for (i = 0; i < Math.ceil(hotelsInfoList.length / pageSize); i++) {
+        req = getWidgetRequestDTO(start + i * pageSize);
+        console.log(req);
 
-        chrome.runtime.sendMessage({ "cmd": "fetchWidgetData", "data": getWidgetRequestDTO(start + i * pageSize) }, function(response) {
+        chrome.runtime.sendMessage({ "cmd": "fetchWidgetData", "data": req }, function(response) {
             if (response && response.hotels) {
                 $.each(response.hotels, function(key, value) {
                     widgetHotelData[key] = value;
                 });
 
-                if (loadData) {
-                    onWindowScroll();
+                if (loadData && widgetHotelData[req.hotelId]) {
+                    populateWidgetData();
                     loadData = false;
                 }
             }
@@ -52,7 +55,7 @@ function fetchExpediaHotelsData() {
 }
 
 
-function onWindowScroll() {
+function populateWidgetData() {
     var cur = null,
         hotelId = null,
         price = null,
@@ -104,7 +107,7 @@ function debounce(func, time) {
     }
 }
 
-$(window).on('scroll', debounce(onWindowScroll, 10));
+$(window).on('scroll', debounce(populateWidgetData, 10));
 
 
 function isElementInViewport(el) {
@@ -174,6 +177,7 @@ function getHotelData() {
     for (var i = 0; i < itinLength; i++) {
         listing = document.getElementsByClassName('listing easyClear')[i];
         otaLength = listing.getElementsByClassName('no_cpu').length;
+
         for (var j = 0; j < otaLength; j++) {
             ota = listing.getElementsByClassName('no_cpu')[j];
             if (ota.getElementsByClassName('provider').length > 0) {
@@ -188,6 +192,7 @@ function getHotelData() {
                 price = ota.getAttribute('data-pernight');
                 hotelInfoList.push({ "hotelId": hotelId, "price": parseFloat(price) || -1 });
             }
+
         }
     }
     return hotelInfoList;
