@@ -45,6 +45,8 @@ function onWindowScroll() {
         hotelId = null,
         price = null,
         hotelData = null;
+    $('.xthrough-exp').show();
+    $('.save-text-exp').show();
     var selector = $(".listing.easyClear");
     $.each(selector, function(index, value) {
         hotelId = $(value)[0].attributes['data-locationid'].value;
@@ -57,10 +59,16 @@ function onWindowScroll() {
 
     if (cur) {
         $(".xthrough-exp span.price").html(hotelData.oldPrice);
+        $('.save-text-exp span.saving').html(hotelData.savings);
         $(".final-price-exp span.price").html(hotelData.price);
         $(".hotel-name-exp").text($(cur).find('.listing_title a.property_title').text());
         $('a.view-deal-link-exp').attr('href', hotelData.url);
-        $('.save-text-exp span.saving').html(hotelData.savings);
+        // if (!hotelData.oldPrice || !hotelData.savings) {
+ //     $('.xthrough-exp').hide();
+ //     $('.save-text-exp').hide();
+ // }
+
+
     }
 }
 
