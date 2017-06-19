@@ -19,11 +19,13 @@
     width: 10px;
     height: 10px;
     border-radius: 100%;
-    background-color: #d80007;
+    background-color: #E5533C;
+    float: left;
+    margin-top: 5%;
 }
 
 .blink {
-    animation: blinker 0.2s cubic-bezier(.5, 0, 1, 1) infinite alternate;
+    animation: blinker 1s cubic-bezier(.5, 0, 1, 1) infinite alternate;
 }
 
 @keyframes blinker {
