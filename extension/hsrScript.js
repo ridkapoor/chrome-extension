@@ -7,7 +7,8 @@ var listingsSelector = $(".listing.easyClear"),
     widgetHotelData = {},
     userRequestDTO = {},
     currencySymbol = null,
-    expediaHotelsToNameMap = {};
+    expediaHotelsToNameMap = {},
+    lastCurr = null;
 
 
 $(function() {
@@ -76,7 +77,8 @@ function populateWidgetData() {
         }
     });
 
-    if (cur) {
+    if (cur != lastCurr) {
+        lastCurr = cur;
         $(".xthrough-exp span.price").html(hotelData.oldPrice);
         $('.save-text-exp span.saving').html(hotelData.savings);
         $(".final-price-exp span.price").html(hotelData.price);
@@ -95,27 +97,6 @@ function populateWidgetData() {
 
         $('#sticky-widget').show();
         $('.ta-beacon').removeClass('ta-beacon');
-
-        // // attach red beacon 
-
-        // var priceBlockProvider = cur.getElementsByClassName("priceBlock")[0].getElementsByClassName("provider")[0].innerText;
-        // if (pattern.test(priceBlockProvider)) {
-        //     // ATTACH TO PRICE BLOCK 
-
-        // } else {
-
-        //     var textLinksLength = cur.getElementsByClassName("text-links")[0].children.length;
-        //     var children = cur.getElementsByClassName("text-links")[0].children;
-        //     for (var i = 0; i < textLinksLength; i++) {
-        //         var attrValue = children[i].getAttribute('data-offerauthor');
-        //         if (pattern.test(attrValue)) {
-        //             // attach to text links 
-
-        //         }
-
-        //     }
-
-        // }
 
     }
 
