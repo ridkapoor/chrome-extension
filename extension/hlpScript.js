@@ -44,9 +44,8 @@ function fetchExpediaHotelsData() {
                     widgetHotelData[key] = value;
                 });
 
-                if (loadData && widgetHotelData[req.hotelId]) {
-                    populateWidgetData();
-                    loadData = false;
+                if (loadData && !$.isEmptyObject(widgetHotelData)) {
+                    loadData = populateWidgetData();
                 }
             }
 
@@ -79,22 +78,24 @@ function populateWidgetData() {
         $(".final-price-exp span.price").html(hotelData.price);
         $(".hotel-name-exp").text($(cur).find('h1.heading_title').text());
         $('a.view-deal-link-exp').attr('href', hotelData.url);
-        $(".save-text-exp span.currency").html(currencySymbol);
-      /*  $(".xthrough-exp span.currency").html(currencySymbol);
-        $(".final-price-exp span.currency").html(currencySymbol);*/
+        $('.price-block-exp .currency').html(currencySymbol);
+        /*  $(".xthrough-exp span.currency").html(currencySymbol);
+          $(".final-price-exp span.currency").html(currencySymbol);*/
 
         if (hotelData.oldPrice && hotelData.savings) {
             $('.xthrough-exp').show();
             $('.save-text-exp').show();
-            $('.final-price-exp .circle-red.blink').hide();
+            $('.final-price-exp .beacon').hide();
         } else {
             $('.xthrough-exp').hide();
             $('.save-text-exp').hide();
-            $('.final-price-exp .circle-red.blink').show();
+            $('.final-price-exp .beacon').show();
         }
 
         $('#sticky-widget').show();
     }
+
+    return cur ? false : true;
 }
 
 function debounce(func, time) {

@@ -3,6 +3,10 @@
     font-family: "Helvetica Neue", Arial, "Lucida Grande", sans-serif;
 }
 
+.widget-container a {
+    text-decoration: none;
+}
+
 #sticky-widget {
     margin-right: 5vw;
     border-radius: 5px;
@@ -85,7 +89,12 @@
     font-weight: bold;
     font-size: 2.5vh;
     text-align: center;
-    margin: 1vh;
+    margin: 1vh 0;
+    position: relative;
+}
+
+.final-price-exp .beacon {
+    display: none;
 }
 
 .xthrough-exp {
@@ -96,6 +105,7 @@
     font-size: 2.3vh;
     color: #d80007;
     text-decoration: line-through;
+    position: relative;
 }
 
 #logo-exp {
@@ -171,62 +181,63 @@ a:hover {
     display: none;
 }
 
-body{
-  background-color:#000;
-}
-.beacon{
-  position:absolute;
-  top:50%;
-  left:50%;
-  background-color:#E14D36;
-  height:0.5em;
-  width:0.5em;
-  border-radius:50%;
-  -webkit-transform:translateX(-50%) translateY(-50%);
-}
-.beacon:before{
-  position:absolute;
-  content:"";
-  height:0.5em;
-  width:0.5em;
-  left:0;
-  top:0;
-  background-color:transparent;
-  border-radius:50%;
-  box-shadow:0px 0px 1px 1px #E14D36;
-  -webkit-animation:active 2s infinite linear;
-  animation:active 2s infinite linear;
+body {
+    background-color: #000;
 }
 
-@-webkit-keyframes active{
-  0%{
-    -webkit-transform:scale(.1);
-    opacity:1;
-  }
-  70%{
-    -webkit-transform:scale(2.5);
-    opacity:0;
-  }
-  100%{
-    opacity:0;
-  }
+.beacon {
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    background-color: #E14D36;
+    height: 0.5em;
+    width: 0.5em;
+    border-radius: 50%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    margin-right: 2%;
 }
 
-@keyframes active{
-  0%{
-    transform:scale(.1);
-    opacity:1;
-  }
-  70%{
-    transform:scale(2.5);
-    opacity:0;
-  }
-  100%{
-    opacity:0;
-  }
+.beacon:before {
+    position: absolute;
+    content: "";
+    height: 0.5em;
+    width: 0.5em;
+    left: 0;
+    top: 0;
+    background-color: transparent;
+    border-radius: 50%;
+    box-shadow: 0px 0px 1px 1px #E14D36;
+    -webkit-animation: active 2s infinite linear;
+    animation: active 2s infinite linear;
 }
 
+@-webkit-keyframes active {
+    0% {
+        -webkit-transform: scale(.1);
+        opacity: 1;
+    }
+    70% {
+        -webkit-transform: scale(2.5);
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+    }
+}
 
+@keyframes active {
+    0% {
+        transform: scale(.1);
+        opacity: 1;
+    }
+    70% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+    100% {
+        opacity: 0;
+    }
+}
 
 
 /*a.view-deal-link-exp,
