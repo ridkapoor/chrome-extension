@@ -118,7 +118,7 @@ function debounce(func, time) {
     }
 }
 
-$(window).on('scroll', debounce(populateWidgetData, 10));
+$(window).on('scroll', debounce(populateWidgetData, 1));
 
 
 function isElementInViewport(el) {
