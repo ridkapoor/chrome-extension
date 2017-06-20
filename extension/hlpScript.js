@@ -60,7 +60,8 @@ function populateWidgetData() {
         hotelId = null,
         price = null,
         hotelData = null;
-
+    var currency = $('*[data-prwidget-name="homepage_footer_pickers"]').find('.unified-picker .picker-inner span')[0].innerText;
+    var currencySymbol = currency.substring(0, 1);
     var listingsSelector = $(".ppr_priv_hr_atf_north_star_nostalgic");
     $.each(listingsSelector, function(index, value) {
         hotelId = document.getElementsByClassName('blRow')[index].getAttribute('data-locid');
@@ -72,11 +73,16 @@ function populateWidgetData() {
     });
 
     if (cur) {
+
         $(".xthrough-exp span.price").html(hotelData.oldPrice);
         $('.save-text-exp span.saving').html(hotelData.savings);
         $(".final-price-exp span.price").html(hotelData.price);
         $(".hotel-name-exp").text($(cur).find('h1.heading_title').text());
         $('a.view-deal-link-exp').attr('href', hotelData.url);
+        $(".save-text-exp span.currency").html(currencySymbol);
+      /*  $(".xthrough-exp span.currency").html(currencySymbol);
+        $(".final-price-exp span.currency").html(currencySymbol);*/
+
         if (hotelData.oldPrice && hotelData.savings) {
             $('.xthrough-exp').show();
             $('.save-text-exp').show();

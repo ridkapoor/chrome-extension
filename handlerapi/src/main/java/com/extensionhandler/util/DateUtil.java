@@ -25,7 +25,7 @@ public class DateUtil {
             if (format.equalsIgnoreCase("dd MMM")) {
                 date = date + " 2017";
                 parse = dateFormat.parse(date);
-            } else if (format.equalsIgnoreCase("dd/MMM/yyyy")) {
+            } else if (format.equalsIgnoreCase("dd/MM/yyyy")) {
                 parse = dateFormatUrl.parse(date);
             }
             formattedDate = toDateFormat.format(parse);
