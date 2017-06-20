@@ -66,6 +66,7 @@ function populateWidgetData() {
         hotelId = document.getElementsByClassName('blRow')[index].getAttribute('data-locid');
         if (widgetHotelData[hotelId] && isElementInViewport(value)) {
             cur = value;
+            //$(cur).find('div[data-provider="Expedia"] .price').addClass('ta-beacon');
             hotelData = widgetHotelData[hotelId];
             return false;
         }
@@ -79,8 +80,6 @@ function populateWidgetData() {
         $(".hotel-name-exp").text($(cur).find('h1.heading_title').text());
         $('a.view-deal-link-exp').attr('href', hotelData.url);
         $('.price-block-exp .currency').html(currencySymbol);
-        /*  $(".xthrough-exp span.currency").html(currencySymbol);
-          $(".final-price-exp span.currency").html(currencySymbol);*/
 
         if (hotelData.oldPrice && hotelData.savings) {
             $('.xthrough-exp').show();
@@ -93,6 +92,7 @@ function populateWidgetData() {
         }
 
         $('#sticky-widget').show();
+        // $('.ta-beacon').removeClass('ta-beacon');
     }
 
     return cur ? false : true;

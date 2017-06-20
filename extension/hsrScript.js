@@ -71,6 +71,7 @@ function populateWidgetData() {
         if (widgetHotelData[hotelId] && isElementInViewport(value)) {
             cur = value;
             hotelData = widgetHotelData[hotelId];
+            $(cur).find('div[data-provider="Expedia"] .price').addClass('ta-beacon');
             return false;
         }
     });
@@ -93,27 +94,29 @@ function populateWidgetData() {
         }
 
         $('#sticky-widget').show();
+        $('.ta-beacon').removeClass('ta-beacon');
 
-        // attach red beacon 
+        // // attach red beacon 
 
-        var priceBlockProvider = cur.getElementsByClassName("priceBlock")[0].getElementsByClassName("provider")[0].innerText;
-        if (pattern.test(priceBlockProvider)) {
-            // ATTACH TO PRICE BLOCK 
+        // var priceBlockProvider = cur.getElementsByClassName("priceBlock")[0].getElementsByClassName("provider")[0].innerText;
+        // if (pattern.test(priceBlockProvider)) {
+        //     // ATTACH TO PRICE BLOCK 
 
-        } else {
+        // } else {
 
-            var textLinksLength = cur.getElementsByClassName("text-links")[0].children.length;
-            var children = cur.getElementsByClassName("text-links")[0].children;
-            for (var i = 0; i < textLinksLength; i++) {
-                var attrValue = children[i].getAttribute('data-offerauthor');
-                if (pattern.test(attrValue)) {
-                    // attach to text links 
+        //     var textLinksLength = cur.getElementsByClassName("text-links")[0].children.length;
+        //     var children = cur.getElementsByClassName("text-links")[0].children;
+        //     for (var i = 0; i < textLinksLength; i++) {
+        //         var attrValue = children[i].getAttribute('data-offerauthor');
+        //         if (pattern.test(attrValue)) {
+        //             // attach to text links 
 
-                }
+        //         }
 
-            }
+        //     }
 
-        }
+        // }
+
     }
 
     return cur ? false : true;
@@ -134,7 +137,7 @@ function debounce(func, time) {
     }
 }
 
-$(window).on('scroll', debounce(populateWidgetData, 1));
+$(window).on('scroll', debounce(populateWidgetData, 10));
 
 
 function isElementInViewport(el) {

@@ -204,7 +204,7 @@ body {
     width: 0.5em;
     left: 0;
     top: 0;
-    background-color: transparent;
+    background-color: #E14D36;
     border-radius: 50%;
     box-shadow: 0px 0px 1px 1px #E14D36;
     -webkit-animation: active 2s infinite linear;
@@ -237,6 +237,39 @@ body {
     100% {
         opacity: 0;
     }
+}
+
+.ta-beacon {
+    position: relative;
+}
+
+.ta-beacon:after {
+    content: "";
+    display: block;
+    position: absolute;
+    height: 8px;
+    width: 8px;
+    background-color: #E14D36;
+    right: -18px;
+    top: 30%;
+    transform: translateY(-50%);
+    box-shadow: 0px 0px 1px 1px #E14D36;
+    -webkit-animation: active 2s infinite linear;
+    animation: active 2s infinite linear;
+    border-radius: 50%;
+}
+
+.ta-beacon:before {
+    content: "";
+    position: absolute;
+    height: 8px;
+    display: block;
+    width: 8px;
+    background-color: #E14D36;
+    right: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
 }
 
 
