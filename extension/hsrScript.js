@@ -5,7 +5,8 @@ var listingsSelector = $(".listing.easyClear"),
     pageSize = 5,
     hotelsInfoList = [],
     widgetHotelData = {},
-    userRequestDTO = {};
+    userRequestDTO = {},
+    currencySymbol=null;
 
 
 $(function() {
@@ -140,6 +141,7 @@ function getUserRequestDTO() {
     var dateFormat = "dd MMM";
     var currency = $('*[data-prwidget-name="homepage_footer_pickers"]').find('.unified-picker .picker-inner span')[0].innerText;
     currency = currency.substring(1, currency.length);
+    currencySymbol=currency.substring(0, 1);
 
     return {
         "checkIn": checkinDate,
