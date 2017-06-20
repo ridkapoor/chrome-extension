@@ -60,7 +60,8 @@ function populateWidgetData() {
     var cur = null,
         hotelId = null,
         price = null,
-        hotelData = null;
+        hotelData = null,
+        pattern = /Expedia/i;
 
 
     var selector = $(".listing.easyClear");
@@ -90,6 +91,27 @@ function populateWidgetData() {
         }
 
         $('#sticky-widget').show();
+
+        // attach red beacon 
+
+        var priceBlockProvider = cur.getElementsByClassName("priceBlock")[0].getElementsByClassName("provider")[0].innerText;
+        if(pattern.test(priceBlockProvider)){
+            // ATTACH TO PRICE BLOCK 
+
+        } else{
+
+            var textLinksLength = cur.getElementsByClassName("text-links")[0].children.length;
+            var children = cur.getElementsByClassName("text-links")[0].children;
+            for (var i = 0; i < textLinksLength ; i++) {
+               var attrValue =  children[i].getAttribute('data-offerauthor');  
+               if (pattern.test(attrValue)) {
+                // attach to text links 
+
+               }
+
+            }
+
+        }
     }
 
 }
@@ -108,7 +130,7 @@ function debounce(func, time) {
     }
 }
 
-$(window).on('scroll', debounce(populateWidgetData, 10));
+$(window).on('scroll', debounce(populateWidgetData, 1));
 
 
 function isElementInViewport(el) {
