@@ -1,6 +1,7 @@
 package com.extensionhandler.services;
 
 import com.extensionhandler.config.AppConfig;
+import com.extensionhandler.config.PriceMapConfig;
 import com.extensionhandler.request.GetMiniHotelExtractorRequest;
 import com.extensionhandler.response.GetHotelPricingResponse;
 import com.extensionhandler.response.GetMinHotelResponse;
@@ -16,7 +17,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by ridkapoor on 6/15/17.
@@ -42,6 +47,9 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
 
     @Autowired
     private PriceUtil priceUtil;
+
+    @Autowired
+    private PriceMapConfig priceMapConfig;
 
 
     @Override
@@ -117,6 +125,11 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
                                     perDayAmounts.getDisplayCategories().getDisplayBase().getTotalPrice().getCurrency(),
                                     currencyExchangeInfo);
 
+                            final Double price = priceMapConfig.getPrice(expHId);
+                            if (price != null) {
+                                modPrice = price.doubleValue();
+                            }
+
                             final double oldPrice = hotelInfochildrenSRO.getPrice();
                             if ((oldPrice > 0 && oldPrice > modPrice)
                                     || (oldPrice == -1)) {
@@ -188,7 +201,7 @@ public class MinExtractorServiceImpl implements IMinExtractorService {
 
     private String getDeepLinkUrl(String hotelId, String checkIn, String checkOut, int noOfAdults, int noOfChildren) {
 
-        StringBuffer stringBuffer = new StringBuffer("https://www.expedia.com/user/signin?ckoflag=0&uurl=e3id%3Dredr%26rurl%3D%2F");
+        StringBuffer stringBuffer = new StringBuffer("https://www.expedia.co.in/user/signin?ckoflag=0&uurl=e3id%3Dredr%26rurl%3D%2F");
         final String signInDeepLinkURL = urlCreator.getSignInDeepLinkURL(hotelId);
         final String[] split = signInDeepLinkURL.split("/");
         stringBuffer.append(split[3]);
